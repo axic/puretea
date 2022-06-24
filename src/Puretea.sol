@@ -43,13 +43,14 @@ library Puretea {
             // TODO: support leave within top level blocks to exit Solidity functions
             function perform(mask, code) -> ret {
                 // TODO: instead of loading 1 byte, consider caching a slot?
+                let opcode
                 for {
                     let offset := add(code, 32)
                     let end := add(offset, mload(code ))
                 } lt(offset, end) {
                     offset := add(offset, 1)
                 } {
-                    let opcode := byte(0, mload(offset))
+                    opcode := byte(0, mload(offset))
 
                     // If opcode is not part of the mask
                     if iszero(matchesMask(mask, opcode)) {
@@ -72,8 +73,8 @@ library Puretea {
                     }
                 }
 
-                // checks have passed
-                ret := 1
+                // Check EIP-3670 terminating opcode rule
+                ret := iszero(iszero(matchesMask(0xe008000000000000000000000000000000000000000000000000000000000001, opcode)))
             }
 
             satisfied := perform(_mask, _code)

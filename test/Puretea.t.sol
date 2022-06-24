@@ -16,7 +16,7 @@ contract PureteaTest is Test {
     function testSmoke() public {
         assertEq(Puretea.isPureGlobal(hex""), true); // empty
         assertEq(Puretea.isPureGlobal(hex"00"), true); // STOP
-        assertEq(Puretea.isPureGlobal(hex"6000"), true); // PUSH1 00
+        assertEq(Puretea.isPureGlobal(hex"600000"), true); // PUSH1 00
         assertEq(Puretea.isPureGlobal(hex"60"), false); // truncated PUSH1
         assertEq(Puretea.isPureGlobal(hex"fe"), true); // REVERT
         assertEq(Puretea.isPureGlobal(hex"ff"), false); // SELFDESTRUCT
@@ -27,7 +27,7 @@ contract PureteaTest is Test {
         assertEq(mask, 0x4000000000000000000000000000000000000000000000000000000100000001);
         assertTrue(Puretea.check(hex"", mask));
         assertTrue(Puretea.check(hex"00", mask));
-        assertTrue(Puretea.check(hex"20", mask));
+        assertTrue(Puretea.check(hex"2000", mask));
         assertTrue(Puretea.check(hex"20fe0020fefe", mask));
         assertFalse(Puretea.check(hex"ff", mask));
     }
@@ -36,7 +36,7 @@ contract PureteaTest is Test {
         uint256 mask = generateMask(hex"000102030405060708090a0b_101112131415161718191a1b1c1d_20_303132333435363738393a3b3c3d3e3f_404142434445464748_505152535455565758595a5b_606162636465666768696a6b6c6d6e6f_707172737475767778797a7b7c7d7e7f_808182838485868788898a8b8c8d8e8f_909192939495969798999a9b9c9d9e9f_a0a1a2a3a4_f0f1f2f3f4f5fafdfeff");
         assertEq(mask, 0xe43f0000000000000000001fffffffffffffffff0fff01ffffff00013fff0fff);
         assertTrue(Puretea.isMutating(hex""));
-        assertTrue(Puretea.isMutating(hex"611234f0"));
+        assertTrue(Puretea.isMutating(hex"611234f000"));
         assertFalse(Puretea.isMutating(hex"21"));
     }
 
@@ -70,5 +70,16 @@ contract PureteaTest is Test {
         assertTrue(Puretea.isView(code));
         assertTrue(Puretea.isPureGlobal(code));
         assertTrue(Puretea.isPureLocal(code));
+    }
+
+    function testTerminating() public {
+        uint256 mask = generateMask(hex"00f3fdfeff");
+        assertEq(mask, 0xe008000000000000000000000000000000000000000000000000000000000001);
+        assertFalse(Puretea.isMutating(hex"f0"));
+        assertTrue(Puretea.isMutating(hex"f000"));
+        assertTrue(Puretea.isMutating(hex"f0f3"));
+        assertTrue(Puretea.isMutating(hex"f0fd"));
+        assertTrue(Puretea.isMutating(hex"6000fe"));
+        assertTrue(Puretea.isMutating(hex"ff"));
     }
 }
