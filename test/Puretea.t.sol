@@ -63,4 +63,12 @@ contract PureteaTest is Test {
         assertTrue(Puretea.isPureLocal(hex"61123400"));
         assertFalse(Puretea.isPureLocal(hex"fa"));
     }
+
+    function testRealCode() public {
+        bytes memory code = hex"6080604052348015600f57600080fd5b50604580601d6000396000f3fe608060405236600a57005b600080fdfe";
+        assertTrue(Puretea.isMutating(code));
+        assertTrue(Puretea.isView(code));
+        assertTrue(Puretea.isPureGlobal(code));
+        assertTrue(Puretea.isPureLocal(code));
+    }
 }
