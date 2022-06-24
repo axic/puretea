@@ -4,22 +4,22 @@ pragma solidity ^0.8.0;
 library Puretea {
     /// Check if the submitted EVM code is well formed. Allows state modification.
     function isMutating(bytes memory code) internal pure returns (bool) {
-        return check(code, 0); // TODO
+        return check(code, 0xe43f0000000000000000001fffffffffffffffff0fff01ffffff00013fff0fff);
     }
 
-    /// Check if the submitted EVM code is well formed, Allows state reading.
+    /// Check if the submitted EVM code is well formed. Allows state reading.
     function isView(bytes memory code) internal pure returns (bool) {
-        return check(code, 0); // TODO
+        return check(code, 0x640800000000000000000000ffffffffffffffff0fdf01ffffff00013fff0fff);
     }
 
-    /// Check if the submitted EVM code is well formed, Disallows state access beyond the current contract.
+    /// Check if the submitted EVM code is well formed. Disallows state access beyond the current contract.
     function isPureGlobal(bytes memory code) internal pure returns (bool) {
-        return check(code, 0); // TODO
+        return check(code, 0x600800000000000000000000ffffffffffffffff0fdf01ff67ff00013fff0fff);
     }
 
     /// Check if the submitted EVM code is well formed. Disallows any state access.
     function isPureLocal(bytes memory code) internal pure returns (bool) {
-        return check(code, 0x6008_0000_0000_0000_0000_001f_ffff_ffff_ffff_ffff_0fdf_01ff_ffff_0001_3fff_0fff); // TODO
+        return check(code, 0x600800000000000000000000ffffffffffffffff0fcf01ffffff00013fff0fff);
     }
 
     /// Check the supplied EVM code against a mask of allowed opcodes and properly support PUSH instructions.
