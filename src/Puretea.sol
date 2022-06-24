@@ -1,0 +1,82 @@
+/// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+library Puretea {
+    /// Check if the submitted EVM code is well formed. Allows state modification.
+    function isMutating(bytes memory code) internal pure returns (bool) {
+        return check(code, 0); // TODO
+    }
+
+    /// Check if the submitted EVM code is well formed, Allows state reading.
+    function isView(bytes memory code) internal pure returns (bool) {
+        return check(code, 0); // TODO
+    }
+
+    /// Check if the submitted EVM code is well formed, Disallows state access beyond the current contract.
+    function isPureGlobal(bytes memory code) internal pure returns (bool) {
+        return check(code, 0); // TODO
+    }
+
+    /// Check if the submitted EVM code is well formed. Disallows any state access.
+    function isPureLocal(bytes memory code) internal pure returns (bool) {
+        return check(code, 0x6008_0000_0000_0000_0000_001f_ffff_ffff_ffff_ffff_0fdf_01ff_ffff_0001_3fff_0fff); // TODO
+    }
+
+    /// Check the supplied EVM code against a mask of allowed opcodes and properly support PUSH instructions.
+    /// Note that this will not perform jumpdest analysis, and it also does not suppor the Solidity metadata,
+    /// which should be stripped upfront.
+    ///
+    /// Also note the mask is an reverse bitmask of allowed opcodes (lowest bit means opcode 0x00).
+    function check(bytes memory _code, uint256 _mask) internal pure returns (bool satisfied) {
+        assembly {
+            function matchesMask(mask, opcode) -> ret {
+                // Note: this function does no return a bool
+                ret := and(mask, shl(opcode, 1))
+            }
+
+            function isPush(opcode) -> ret {
+                // TODO: optimise
+                ret := and(gt(opcode, 0x5f), lt(opcode, 0x80))
+            }
+
+            // Wrapping into a function to make use of the leave keyword
+            // TODO: support leave within top level blocks to exit Solidity functions
+            function perform(mask, code) -> ret {
+                // TODO: instead of loading 1 byte, consider caching a slot?
+                for {
+                    let offset := add(code, 32)
+                    let end := add(offset, mload(code))
+                } lt(offset, end) {
+                    offset := add(offset, 1)
+                } {
+                    let opcode := shr(248, mload(offset))
+
+                    // If opcode is not part of the mask
+                    if iszero(matchesMask(mask, opcode)) {
+                        // ret is set as false implicitly here
+                        leave
+                    }
+
+                    // If opcode is a push instruction
+                    if isPush(opcode) {
+                        // Since we know that opcode is [0x60,x7f],
+                        // this code is equivalent to add(and(opcode, 0x1f), 1)
+                        let immLen := sub(opcode, 0x5f)
+                        offset := add(offset, immLen)
+
+                        // Check for push overreading
+                        if iszero(lt(offset, end)) {
+                            // ret is set as false implicitly here
+                            leave
+                        }
+                    }
+                }
+
+                // checks have passed
+                ret := 1
+            }
+
+            satisfied := perform(_mask, _code)
+        }
+    }
+}
