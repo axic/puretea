@@ -38,6 +38,8 @@ And also a low-level helper:
     function check(bytes memory code, uint256 mask) private pure returns (bool satisfied);
 ```
 
+Additionally in the test suite the [`generateMask`](./test/Puretea.t.sol) helper can be used to create custom masks.
+
 ## Background
 
 The need for purity checkers is not something new. There have been two bigger efforts on the topic.
