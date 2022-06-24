@@ -71,4 +71,9 @@ contract PureteaTest is Test {
         assertTrue(Puretea.isPureGlobal(code));
         assertTrue(Puretea.isPureLocal(code));
     }
+
+    function testPush() public {
+        uint256 mask = generateMask(hex"606162636465666768696a6b6c6d6e6f_707172737475767778797a7b7c7d7e7f");
+        assertEq(mask, 0xffffffff000000000000000000000000);
+    }
 }

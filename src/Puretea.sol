@@ -36,7 +36,8 @@ library Puretea {
 
             function isPush(opcode) -> ret {
                 // TODO: optimise
-                ret := and(gt(opcode, 0x5f), lt(opcode, 0x80))
+                ret := and(shl(opcode, 1), 0xffffffff000000000000000000000000)
+                // ret := and(gt(opcode, 0x5f), lt(opcode, 0x80))
             }
 
             // Wrapping into a function to make use of the leave keyword
