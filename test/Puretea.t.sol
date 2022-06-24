@@ -4,11 +4,18 @@ pragma solidity ^0.8.0;
 import "forge-std/Test.sol";
 
 import "../src/Puretea.sol";
+import "../src/SolidityMetadata.sol";
 
 // Could use uint8[], but array literals can't be passed to dynamic arrays yet.
 function generateMask(bytes memory allowedOpcodes) pure returns (uint256 mask) {
     for (uint256 i = 0; i < allowedOpcodes.length; i++) {
         mask |= 1 << uint8(allowedOpcodes[i]);
+    }
+}
+
+contract Mock {
+    function check(bytes calldata code, uint256 mask) external pure returns (bool) {
+        return Puretea.check(code, mask);
     }
 }
 
@@ -66,6 +73,14 @@ contract PureteaTest is Test {
 
     function testRealCode() public {
         bytes memory code = hex"6080604052348015600f57600080fd5b50604580601d6000396000f3fe608060405236600a57005b600080fdfe";
+        assertTrue(Puretea.isMutating(code));
+        assertTrue(Puretea.isView(code));
+        assertTrue(Puretea.isPureGlobal(code));
+        assertTrue(Puretea.isPureLocal(code));
+    }
+
+    function testSelf() public {
+        bytes memory code = SolidityMetadata.trim(type(Mock).runtimeCode);
         assertTrue(Puretea.isMutating(code));
         assertTrue(Puretea.isView(code));
         assertTrue(Puretea.isPureGlobal(code));
