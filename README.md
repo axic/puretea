@@ -10,7 +10,7 @@ It comes with a few caveats:
 2) It does not perform `JUMPDEST`-analysis (see [this talk](https://www.youtube.com/watch?v=8Cp8IsmIJl4)
 for an explainer), but relies on EVM execution for it.
 3) It does not handle the [Solidity metadata](https://docs.soliditylang.org/en/latest/metadata.html#contract-metadata),
-but (soon) contains a helper function for removing it.
+but contains a helper function for removing it.
 
 ## Usage
 
