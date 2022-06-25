@@ -73,8 +73,8 @@ library Puretea {
                     }
                 }
 
-                // Check EIP-3670 terminating opcode rule
-                ret := iszero(iszero(matchesMask(0xe008000000000000000000000000000000000000000000000000000000000001, opcode)))
+                // Check EIP-3670 terminating opcode rule (also implies empty code is not valid)
+                ret := and(iszero(iszero(mload(code))), iszero(iszero(matchesMask(0xe008000000000000000000000000000000000000000000000000000000000001, opcode))))
             }
 
             satisfied := perform(_mask, _code)
