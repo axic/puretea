@@ -1,0 +1,7 @@
+PureteaTest:testCustomMask() (gas: 3417)
+PureteaTest:testMutating() (gas: 29417)
+PureteaTest:testPureGlobal() (gas: 26305)
+PureteaTest:testPureLocal() (gas: 26733)
+PureteaTest:testRealCode() (gas: 20754)
+PureteaTest:testSmoke() (gas: 2718)
+PureteaTest:testView() (gas: 27131)
