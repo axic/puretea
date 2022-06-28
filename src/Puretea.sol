@@ -45,11 +45,11 @@ library Puretea {
                 // TODO: instead of loading 1 byte, consider caching a slot?
                 for {
                     let offset := add(code, 32)
-                    let end := add(offset, mload(code))
+                    let end := add(offset, mload(code ))
                 } lt(offset, end) {
                     offset := add(offset, 1)
                 } {
-                    let opcode := shr(248, mload(offset))
+                    let opcode := byte(0, mload(offset))
 
                     // If opcode is not part of the mask
                     if iszero(matchesMask(mask, opcode)) {
