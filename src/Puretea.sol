@@ -28,7 +28,7 @@ library Puretea {
     ///
     /// Also note the mask is an reverse bitmask of allowed opcodes (lowest bit means opcode 0x00).
     function check(bytes memory _code, uint256 _mask) internal pure returns (bool satisfied) {
-        assembly {
+        assembly ("memory-safe") {
             function matchesMask(mask, opcode) -> ret {
                 // Note: this function does no return a bool
                 ret := and(mask, shl(opcode, 1))
